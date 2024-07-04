@@ -1,6 +1,7 @@
 pub mod color;
 pub mod hittable;
 pub mod hittable_list;
+pub mod interval;
 pub mod ray;
 pub mod rtweekend;
 pub mod sphere;
@@ -11,14 +12,15 @@ use hittable_list::HittableList;
 use indicatif::ProgressBar;
 
 use color::{color, write_color};
+use interval::interval;
 use ray::Ray;
-use rtweekend::INFINITY;
 use sphere::sphere;
+use std::f64::INFINITY;
 use vec3::*;
 
 fn ray_color(r: &Ray, world: &HittableList) -> Vec3 {
     let mut rec: HitRecord = HitRecord::default();
-    if world.hit(r, 0.0, INFINITY, &mut rec) {
+    if world.hit(r, interval(0.0, INFINITY), &mut rec) {
         return 0.5 * (rec.normal + color(1.0, 1.0, 1.0));
     }
 
