@@ -1,5 +1,7 @@
 use std::ops;
 
+use crate::rtweekend::{random_double, random_double_intv};
+
 // Alias constructor functions
 pub fn vec3(x: f64, y: f64, z: f64) -> Vec3 {
     Vec3::builder().xyz(x, y, z).build()
@@ -169,6 +171,22 @@ impl Vec3 {
         self.x * self.x + self.y * self.y + self.z * self.z
     }
 
+    pub fn random() -> Vec3 {
+        Vec3 { 
+            x: random_double(), 
+            y: random_double(), 
+            z: random_double(), 
+        }
+    }
+
+    pub fn random_intv(min : f64, max : f64) -> Vec3 {
+        Vec3 { 
+            x: random_double_intv(min, max), 
+            y: random_double_intv(min, max), 
+            z: random_double_intv(min, max) 
+        }
+    }
+
     pub fn length(&self) -> f64 {
         self.length_squared().sqrt()
     }
@@ -186,8 +204,34 @@ pub fn cross(u: &Vec3, v: &Vec3) -> Vec3 {
     }
 }
 
+#[inline(always)]
 pub fn unit_vector(v: &Vec3) -> Vec3 {
     *v / v.length()
+}
+
+#[inline(always)]
+pub fn random_in_unit_vector() -> Vec3 {
+    loop {
+        let p = Vec3::random_intv(-1.0, 1.0);
+        if p.length_squared() < 1.0 {
+            return p;
+        }
+    }
+}
+
+#[inline(always)]
+pub fn random_unit_vector() -> Vec3 {
+    unit_vector(&random_in_unit_vector())
+}
+
+#[inline(always)]
+pub fn random_on_hemisphere(normal : &Vec3) -> Vec3 {
+    let on_unit_sphere = random_unit_vector();
+    if dot(&on_unit_sphere, normal) > 0.0 {
+        on_unit_sphere
+    } else {
+        -on_unit_sphere
+    }
 }
 
 // Vector Builder (for using Builder Pattern)

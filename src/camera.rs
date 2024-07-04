@@ -14,9 +14,10 @@ use crate::vec3::*;
 
 #[derive(Debug)]
 pub struct Camera {
-    pub aspect_ratio: f64,
-    pub image_width: u64,
-    pub samples_per_pixel: usize,
+    pub aspect_ratio: f64,          // Ratio of image width over height
+    pub image_width: u64,           // Rendered image width in pixel count
+    pub samples_per_pixel: usize,   // Count of random samples for each pixel
+    pub max_depth: usize,           // Maximum number of ray bounces into scene
 
     image_height: u64,
     pixel_samples_scale: f64,
@@ -32,6 +33,7 @@ impl Default for Camera {
             aspect_ratio: 1.0,
             image_width: 100,
             samples_per_pixel: 10,
+            max_depth: 10,
             image_height: 100,
             pixel_samples_scale: 0.1,
             center: vec3(0.0, 0.0, 0.0),
@@ -56,7 +58,7 @@ impl Camera {
 
                 for _sample in 0..self.samples_per_pixel {
                     let r = self.get_ray(i, j);
-                    pixel_color = pixel_color + self.ray_color(&r, world);
+                    pixel_color = pixel_color + self.ray_color(&r,self.max_depth, world);
                 }
 
                 write_color(&(pixel_color * self.pixel_samples_scale));
@@ -114,10 +116,17 @@ impl Camera {
         return vec3(random_double() - 0.5, random_double() - 0.5, 0.0);
     }
 
-    fn ray_color(&self, r: &Ray, world: &HittableList) -> Vec3 {
+    fn ray_color(&self, r: &Ray, depth : usize, world: &HittableList) -> Vec3 {
+        // If we've exceeded the ray bounce limit, no more light is gathered.
+        if depth <= 0 {
+            return color(0.0,0.0,0.0);
+        }
+
         let mut rec: HitRecord = HitRecord::default();
+
         if world.hit(r, interval(0.0, INFINITY), &mut rec) {
-            return 0.5 * (rec.normal + color(1.0, 1.0, 1.0));
+            let direction = random_on_hemisphere(&rec.normal);
+            return 0.5 * self.ray_color(&Ray::new(&rec.p, &direction), depth-1, world)
         }
 
         let unit_direction = unit_vector(&r.direction());
