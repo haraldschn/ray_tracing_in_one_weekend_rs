@@ -1,4 +1,4 @@
-use crate::vec3::Vec3;
+use crate::vec3::*;
 
 pub fn color(x: f64, y: f64, z: f64) -> Vec3 {
     Vec3::builder().xyz(x, y, z).build()
