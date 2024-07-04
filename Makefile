@@ -9,4 +9,4 @@ clean:
 	rm -rf image.ppm
 
 image_clean:
-	rm -rf image.ppm
+	rm -rf *.ppm
