@@ -4,12 +4,25 @@ pub mod ray;
 
 use indicatif::ProgressBar;
 
-use vec3::{point3, unit_vector, vec3, Vec3};
+use vec3::*;
 use color::{color, write_color};
 use ray::Ray;
 
+fn hit_sphere (center: &Vec3, radius : f64, r : &Ray) -> bool {
+    let oc = *center - r.origin();
+    let a = dot(&r.direction(), &r.direction());
+    let b = -2.0 * dot(&r.direction(), &oc);
+    let c = dot(&oc, &oc) - radius * radius;
+    let discriminant = b*b - 4.0*a*c;
+    
+    discriminant >= 0.0
+}
 
 fn ray_color(r : &Ray) -> Vec3 {
+    if hit_sphere(&point3(0.0, 0.0, -1.0), 0.5, r) {
+        return color(1.0, 0.0, 0.0);
+    }
+
     let unit_direction = unit_vector(&r.direction());
     let a = 0.5 * (unit_direction.y() + 1.0);
     (1.0 - a) * color(1.0,1.0,1.0) + a*color(0.5, 0.7, 1.0)
