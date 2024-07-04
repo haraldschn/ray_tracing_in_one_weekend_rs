@@ -1,16 +1,16 @@
 use std::ops;
 
 // Alias constructor functions
-pub fn vec3(x : f64, y : f64, z : f64) -> Vec3 {
+pub fn vec3(x: f64, y: f64, z: f64) -> Vec3 {
     Vec3::builder().xyz(x, y, z).build()
 }
 
-pub fn point3(x : f64, y : f64, z : f64) -> Vec3 {
+pub fn point3(x: f64, y: f64, z: f64) -> Vec3 {
     Vec3::builder().xyz(x, y, z).build()
 }
 
 /// Vec3 struct
-#[derive(Debug, PartialEq, Clone, Copy)]
+#[derive(Debug, Default, PartialEq, Clone, Copy)]
 pub struct Vec3 {
     x: f64,
     y: f64,
