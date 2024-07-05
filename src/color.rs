@@ -5,10 +5,21 @@ pub fn color(x: f64, y: f64, z: f64) -> Vec3 {
     Vec3::builder().xyz(x, y, z).build()
 }
 
+fn linear_to_gamma(linear_component : f64) -> f64 {
+    if linear_component > 0.0 {
+        return linear_component.sqrt()
+    }
+    return 0.0
+}
+
 pub fn write_color(pixel_color: &Vec3) {
-    let r = pixel_color.x();
-    let g = pixel_color.y();
-    let b = pixel_color.z();
+    let mut r = pixel_color.x();
+    let mut g = pixel_color.y();
+    let mut b = pixel_color.z();
+
+    r = linear_to_gamma(r);
+    g = linear_to_gamma(g);
+    b = linear_to_gamma(b);
 
     let intensity: Interval = interval(0.000, 0.999);
     let rbyte = (256.0 * intensity.clamp(r)) as i32;
