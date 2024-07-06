@@ -1,7 +1,5 @@
 use std::f64::INFINITY;
 
-use indicatif::ProgressBar;
-
 use crate::hittable::{HitRecord, Hittable};
 use crate::hittable_list::HittableList;
 
@@ -14,10 +12,10 @@ use crate::vec3::*;
 
 #[derive(Debug)]
 pub struct Camera {
-    pub aspect_ratio: f64,          // Ratio of image width over height
-    pub image_width: u64,           // Rendered image width in pixel count
-    pub samples_per_pixel: usize,   // Count of random samples for each pixel
-    pub max_depth: usize,           // Maximum number of ray bounces into scene
+    pub aspect_ratio: f64,        // Ratio of image width over height
+    pub image_width: u64,         // Rendered image width in pixel count
+    pub samples_per_pixel: usize, // Count of random samples for each pixel
+    pub max_depth: usize,         // Maximum number of ray bounces into scene
 
     image_height: u64,
     pixel_samples_scale: f64,
@@ -50,20 +48,20 @@ impl Camera {
 
         print!("P3\n{} {}\n255\n", self.image_width, self.image_height);
 
-        let bar = ProgressBar::new(self.image_height);
         for j in 0..self.image_height {
-            bar.inc(1);
+            eprint!("\rScanlines remaining: {} ", (self.image_height-1)-j);
             for i in 0..self.image_width {
                 let mut pixel_color = color(0.0, 0.0, 0.0);
 
                 for _sample in 0..self.samples_per_pixel {
                     let r = self.get_ray(i, j);
-                    pixel_color = pixel_color + self.ray_color(&r,self.max_depth, world);
+                    pixel_color = pixel_color + self.ray_color(&r, self.max_depth, world);
                 }
 
                 write_color(&(pixel_color * self.pixel_samples_scale));
             }
         }
+        eprintln!("\nDone");
     }
 
     fn initialize(&mut self) {
@@ -125,8 +123,14 @@ impl Camera {
         let mut rec: HitRecord = HitRecord::default();
 
         if world.hit(r, interval(0.001, INFINITY), &mut rec) {
-            let direction = rec.normal + random_unit_vector();
-            return 0.5 * self.ray_color(&Ray::new(&rec.p, &direction), depth-1, world)
+
+            let (hit_bool, attenuation, scattered) = rec.mat.scatter(r, &rec);
+
+            if hit_bool {
+                return attenuation * self.ray_color(&scattered, depth-1, world);
+            }
+
+            return color(0.0, 0.0, 0.0)
         }
 
         let unit_direction = unit_vector(&r.direction());

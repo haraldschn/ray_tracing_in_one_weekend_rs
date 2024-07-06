@@ -171,19 +171,24 @@ impl Vec3 {
         self.x * self.x + self.y * self.y + self.z * self.z
     }
 
+    pub fn near_zero(&self) -> bool {
+        let s = 1e-8;
+        (self.x.abs() < s) && (self.y.abs() < s) && (self.z.abs() < s)
+    }
+
     pub fn random() -> Vec3 {
-        Vec3 { 
-            x: random_double(), 
-            y: random_double(), 
-            z: random_double(), 
+        Vec3 {
+            x: random_double(),
+            y: random_double(),
+            z: random_double(),
         }
     }
 
-    pub fn random_intv(min : f64, max : f64) -> Vec3 {
-        Vec3 { 
-            x: random_double_intv(min, max), 
-            y: random_double_intv(min, max), 
-            z: random_double_intv(min, max) 
+    pub fn random_intv(min: f64, max: f64) -> Vec3 {
+        Vec3 {
+            x: random_double_intv(min, max),
+            y: random_double_intv(min, max),
+            z: random_double_intv(min, max),
         }
     }
 
@@ -225,13 +230,18 @@ pub fn random_unit_vector() -> Vec3 {
 }
 
 #[inline(always)]
-pub fn random_on_hemisphere(normal : &Vec3) -> Vec3 {
+pub fn random_on_hemisphere(normal: &Vec3) -> Vec3 {
     let on_unit_sphere = random_unit_vector();
     if dot(&on_unit_sphere, normal) > 0.0 {
         on_unit_sphere
     } else {
         -on_unit_sphere
     }
+}
+
+#[inline(always)]
+pub fn reflect(v: &Vec3, n: &Vec3) -> Vec3 {
+    (*v) - 2.0*dot(v,n) * (*n)
 }
 
 // Vector Builder (for using Builder Pattern)

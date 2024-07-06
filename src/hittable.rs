@@ -1,11 +1,13 @@
 use crate::interval::Interval;
 use crate::ray::Ray;
-use crate::vec3::*;
+use crate::vec3::*; 
+use crate::Material;
 
 #[derive(Debug, Default, Clone, Copy)]
 pub struct HitRecord {
     pub p: Vec3,
     pub normal: Vec3,
+    pub mat: Material,
     pub t: f64,
     pub front_face: bool,
 }

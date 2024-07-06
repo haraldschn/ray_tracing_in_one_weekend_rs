@@ -5,11 +5,11 @@ pub fn color(x: f64, y: f64, z: f64) -> Vec3 {
     Vec3::builder().xyz(x, y, z).build()
 }
 
-fn linear_to_gamma(linear_component : f64) -> f64 {
+fn linear_to_gamma(linear_component: f64) -> f64 {
     if linear_component > 0.0 {
-        return linear_component.sqrt()
+        return linear_component.sqrt();
     }
-    return 0.0
+    return 0.0;
 }
 
 pub fn write_color(pixel_color: &Vec3) {
