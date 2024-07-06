@@ -1,6 +1,6 @@
 use crate::hittable::HitRecord;
 use crate::ray::Ray;
-use crate::{random_unit_vector, reflect, Vec3};
+use crate::{dot, random_unit_vector, reflect, unit_vector, Vec3};
 
 #[derive(Debug, Clone, Copy)]
 pub enum MaterialType {
@@ -13,6 +13,7 @@ pub enum MaterialType {
 pub struct Material {
     albedo: Vec3,
     mat_type: MaterialType,
+    fuzz: f64,
 }
 
 impl Default for Material {
@@ -20,23 +21,30 @@ impl Default for Material {
         Material {
             albedo: Vec3::default(),
             mat_type: MaterialType::Lambertian,
+            fuzz: 0.0,
         }
     }
 }
 
 pub fn lambertian(albedo: Vec3) -> Material {
-    Material { albedo: albedo, mat_type: MaterialType::Lambertian }
+    Material { albedo: albedo, mat_type: MaterialType::Lambertian, fuzz: 0.0 }
 }
 
-pub fn metal(albedo: Vec3) -> Material {
-    Material { albedo: albedo, mat_type: MaterialType::Metal }
+pub fn metal(albedo: Vec3, fuzz: f64) -> Material {
+    if fuzz.abs() < 1.0 {
+        Material { albedo: albedo, mat_type: MaterialType::Metal, fuzz: fuzz }
+    } else {
+        Material { albedo: albedo, mat_type: MaterialType::Metal, fuzz: 1.0 }
+    }
+    
 }
 
 impl Material {
-    pub fn new(albedo: Vec3, mat_type: MaterialType) -> Material {
+    pub fn new(albedo: Vec3, mat_type: MaterialType, fuzz: f64) -> Material {
         Material {
             albedo: albedo,
             mat_type: mat_type,
+            fuzz: fuzz
         }
     }
 
@@ -64,11 +72,13 @@ impl Material {
 
     fn scatter_metal(&self, r_in: &Ray, rec: &HitRecord) -> (bool, Vec3, Ray) {
         
-        let reflected = reflect(&r_in.direction(), &rec.normal);
+        let mut reflected = reflect(&r_in.direction(), &rec.normal);
+        reflected = unit_vector(&reflected) + (self.fuzz * random_unit_vector());
 
         let scattered = &mut Ray::new(&rec.p, &reflected);
         let attenuation = self.albedo;
-        return (true, attenuation, *scattered)
+        let scatter_bool = dot(&scattered.direction(), &rec.normal) > 0.0;
+        return (scatter_bool, attenuation, *scattered)
     }
 
 
