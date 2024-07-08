@@ -21,7 +21,7 @@ impl Sphere {
         Sphere {
             center: center.clone(),
             radius: radius,
-            mat: material.clone()
+            mat: material.clone(),
         }
     }
 }

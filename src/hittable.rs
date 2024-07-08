@@ -1,6 +1,6 @@
 use crate::interval::Interval;
 use crate::ray::Ray;
-use crate::vec3::*; 
+use crate::vec3::*;
 use crate::Material;
 
 #[derive(Debug, Default, Clone, Copy)]

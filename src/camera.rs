@@ -49,7 +49,7 @@ impl Camera {
         print!("P3\n{} {}\n255\n", self.image_width, self.image_height);
 
         for j in 0..self.image_height {
-            eprint!("\rScanlines remaining: {} ", (self.image_height-1)-j);
+            eprint!("\rScanlines remaining: {} ", (self.image_height - 1) - j);
             for i in 0..self.image_width {
                 let mut pixel_color = color(0.0, 0.0, 0.0);
 
@@ -114,23 +114,22 @@ impl Camera {
         return vec3(random_double() - 0.5, random_double() - 0.5, 0.0);
     }
 
-    fn ray_color(&self, r: &Ray, depth : usize, world: &HittableList) -> Vec3 {
+    fn ray_color(&self, r: &Ray, depth: usize, world: &HittableList) -> Vec3 {
         // If we've exceeded the ray bounce limit, no more light is gathered.
         if depth <= 0 {
-            return color(0.0,0.0,0.0);
+            return color(0.0, 0.0, 0.0);
         }
 
         let mut rec: HitRecord = HitRecord::default();
 
         if world.hit(r, interval(0.001, INFINITY), &mut rec) {
-
             let (hit_bool, attenuation, scattered) = rec.mat.scatter(r, &rec);
 
             if hit_bool {
-                return attenuation * self.ray_color(&scattered, depth-1, world);
+                return attenuation * self.ray_color(&scattered, depth - 1, world);
             }
 
-            return color(0.0, 0.0, 0.0)
+            return color(0.0, 0.0, 0.0);
         }
 
         let unit_direction = unit_vector(&r.direction());

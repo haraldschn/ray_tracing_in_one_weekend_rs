@@ -241,7 +241,16 @@ pub fn random_on_hemisphere(normal: &Vec3) -> Vec3 {
 
 #[inline(always)]
 pub fn reflect(v: &Vec3, n: &Vec3) -> Vec3 {
-    (*v) - 2.0*dot(v,n) * (*n)
+    (*v) - 2.0 * dot(v, n) * (*n)
+}
+
+#[inline(always)]
+pub fn refract(uv: &Vec3, n: &Vec3, etai_over_etat: f64) -> Vec3 {
+    let uv_b = *uv;
+    let cos_theta = dot(&-uv_b, n).min(1.0);
+    let r_out_perp = etai_over_etat * (uv_b + cos_theta * *n);
+    let r_out_parallel = -(1.0 - r_out_perp.length_squared()).abs().sqrt() * *n;
+    r_out_perp + r_out_parallel
 }
 
 // Vector Builder (for using Builder Pattern)
