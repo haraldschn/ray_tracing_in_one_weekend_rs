@@ -121,9 +121,9 @@ impl Material {
         let unit_direction = unit_vector(&r_in.direction());
         let neg_unit_direction = -unit_direction;
         let cos_theta = dot(&neg_unit_direction, &rec.normal).min(1.0);
-        let sin_theta = (1.0 - cos_theta*cos_theta).sqrt();
+        let sin_theta = (1.0 - cos_theta * cos_theta).sqrt();
 
-        let cannot_refract = ri*sin_theta > 1.0;
+        let cannot_refract = ri * sin_theta > 1.0;
         let direction;
 
         if cannot_refract || reflectance(cos_theta, ri) > random_double() {
@@ -137,11 +137,10 @@ impl Material {
     }
 }
 
-
 fn reflectance(cosine: f64, refraction_index: f64) -> f64 {
     // Use Schlick's approximation for reflectance
     let mut r0 = (1.0 - refraction_index) / (1.0 + refraction_index);
-    r0 = r0*r0;
-    
-    r0 + (1.0-r0)*(1.0-cosine).powi(5)
+    r0 = r0 * r0;
+
+    r0 + (1.0 - r0) * (1.0 - cosine).powi(5)
 }
