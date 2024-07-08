@@ -38,10 +38,13 @@ fn main() {
     cam.samples_per_pixel = 100;
     cam.max_depth = 50;
 
-    cam.vfov = 20;
+    cam.vfov = 20.0;
     cam.look_from = point3(-2.0, 2.0, 1.0);
     cam.look_at = point3(0.0, 0.0, -1.0);
     cam.v_up = point3(0.0, 1.0, 0.0);
+
+    cam.defocus_angle = 10.0;
+    cam.focus_dist = 3.4;
 
     cam.render(&world);
 }
