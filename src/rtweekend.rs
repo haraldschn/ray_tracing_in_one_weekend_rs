@@ -1,4 +1,4 @@
-use rand::Rng;
+use rand::RngExt;
 use std::f64::consts::PI;
 
 #[inline(always)]
@@ -8,8 +8,8 @@ pub fn degrees_to_radians(degrees: f64) -> f64 {
 
 #[inline(always)]
 pub fn random_double() -> f64 {
-    let mut rng = rand::thread_rng();
-    rng.gen::<f64>()
+    let mut rng = rand::rng();
+    rng.random()
 }
 
 #[inline(always)]
